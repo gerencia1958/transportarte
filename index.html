@@ -145,7 +145,258 @@
   .coste-grupo-header:hover { background: #f5f5f0; }
   .coste-grupo-body { padding: 12px; background: #fff; border-top: 0.5px solid rgba(0,0,0,0.06); display: none; }
   .coste-grupo-body.open { display: block; }
-  .coste-chevron { font-size: 14px; color: #aaa; transition: transform 0.2s; flex-shrink: 0; }
+<style>
+.guia-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1.5px solid #E25C1D;
+  border-radius: 20px;
+  color: #E25C1D;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.guia-btn:hover {
+  background: #E25C1D;
+  color: white;
+}
+.guia-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Overlay */
+.guia-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.75);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.guia-overlay.visible {
+  display: flex;
+}
+
+/* Modal */
+.guia-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+}
+
+/* Modal header */
+.guia-modal-header {
+  background: #1a1a2e;
+  border-radius: 16px 16px 0 0;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.guia-modal-header h2 {
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+}
+.guia-modal-header p {
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+.guia-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.guia-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Progress bar */
+.guia-progress {
+  display: flex;
+  gap: 4px;
+  padding: 1rem 1.5rem 0;
+}
+.guia-progress-dot {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: #e8e8e8;
+  transition: background 0.3s;
+}
+.guia-progress-dot.active {
+  background: #E25C1D;
+}
+
+/* Steps */
+.guia-steps {
+  padding: 1.5rem;
+}
+.guia-step {
+  display: none;
+}
+.guia-step.active {
+  display: block;
+}
+
+/* Step header */
+.guia-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E25C1D;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.guia-step h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 6px;
+}
+.guia-step .guia-step-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+/* Visual card dentro del step */
+.guia-card {
+  background: #f8f7f5;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.guia-card-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ececec;
+}
+.guia-card-row:last-child {
+  border-bottom: none;
+}
+.guia-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.guia-icon.orange { background: #fdf0ea; }
+.guia-icon.blue   { background: #e8eaf6; }
+.guia-icon.green  { background: #e8f5e9; }
+.guia-icon.gray   { background: #f1f1f1; }
+
+.guia-card-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.guia-card-text span {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* Tip box */
+.guia-tip {
+  background: #fdf0ea;
+  border-left: 3px solid #E25C1D;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #7a3010;
+  line-height: 1.5;
+  margin-top: 0.75rem;
+}
+.guia-tip strong { color: #E25C1D; }
+
+/* Resultado simulado */
+.guia-resultado {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.guia-resultado-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.guia-resultado-row:last-child { border-bottom: none; }
+.guia-resultado-row span:first-child { color: rgba(255,255,255,0.55); }
+.guia-resultado-row span:last-child  { color: white; font-weight: 500; }
+.guia-resultado-row.total span { color: #E25C1D !important; font-size: 15px; font-weight: 700 !important; }
+
+/* Nav botones */
+.guia-nav {
+  display: flex;
+  gap: 10px;
+  padding: 0 1.5rem 1.5rem;
+}
+.guia-nav-prev {
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.guia-nav-prev:hover { border-color: #aaa; color: #333; }
+.guia-nav-next {
+  flex: 2;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #E25C1D;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.guia-nav-next:hover { background: #c04d17; }
+.guia-nav-next.finish { background: #1a1a2e; }
+.guia-nav-next.finish:hover { background: #2d2d4e; }
 </style>
 </head>
 <body>
