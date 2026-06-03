@@ -2201,5 +2201,129 @@ window.addEventListener('appinstalled', () => {
   if (banner) banner.style.display = 'none';
 });
 </script>
+
+<!-- INICIO: Modal tutorial primeros pasos -->
+<div class="guia-overlay" id="guia-overlay" onclick="cerrarGuiaOverlay(event)">
+  <div class="guia-modal" role="dialog" aria-modal="true" aria-labelledby="guia-titulo">
+    <div class="guia-modal-header">
+      <div>
+        <h2 id="guia-titulo">Primeros pasos</h2>
+        <p>Aprende a usar Transportarte en 4 pasos</p>
+      </div>
+      <button class="guia-close" onclick="cerrarGuia()" aria-label="Cerrar">&#x2715;</button>
+    </div>
+    <div class="guia-progress">
+      <div class="guia-progress-dot active" id="dot-0"></div>
+      <div class="guia-progress-dot" id="dot-1"></div>
+      <div class="guia-progress-dot" id="dot-2"></div>
+      <div class="guia-progress-dot" id="dot-3"></div>
+    </div>
+    <div class="guia-steps">
+      <div class="guia-step active" id="guia-step-0">
+        <div class="guia-step-num">1</div>
+        <h3>Configura tu vehículo</h3>
+        <p class="guia-step-desc">Lo primero es añadir tu furgoneta a la flota. Solo lo haces una vez y la app recuerda tus datos.</p>
+        <div class="guia-card">
+          <div class="guia-card-row"><div class="guia-icon blue">👤</div><div class="guia-card-text"><strong>Ve a la sección Perfil</strong><span>Pulsa el icono de perfil en la barra inferior</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon orange">🚐</div><div class="guia-card-text"><strong>Añade tu furgoneta</strong><span>Selecciona marca, modelo y motor. La app rellena el consumo automáticamente</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon green">⛽</div><div class="guia-card-text"><strong>Ajusta el consumo real</strong><span>Pon el consumo que ves en tu cuadro de mandos en ruta</span></div></div>
+        </div>
+        <div class="guia-tip"><strong>Consejo:</strong> Si tienes varias furgonetas, añádelas todas. Luego elegirás cuál usas en cada ruta.</div>
+      </div>
+      <div class="guia-step" id="guia-step-1">
+        <div class="guia-step-num">2</div>
+        <h3>Introduce la ruta</h3>
+        <p class="guia-step-desc">La app calcula la distancia real entre origen y destino usando OpenStreetMap.</p>
+        <div class="guia-card">
+          <div class="guia-card-row"><div class="guia-icon orange">📍</div><div class="guia-card-text"><strong>Escribe origen y destino</strong><span>El autocompletado sugiere direcciones mientras escribes</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon blue">🗺️</div><div class="guia-card-text"><strong>Pulsa "Calcular distancia"</strong><span>Obtendrás los km reales y el tiempo estimado</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon gray">🚀</div><div class="guia-card-text"><strong>Elige autopista o nacional</strong><span>La app muestra las dos opciones con su coste estimado</span></div></div>
+        </div>
+        <div class="guia-tip"><strong>Consejo:</strong> Usa Google Maps o Waze para confirmar la ruta antes de salir.</div>
+      </div>
+      <div class="guia-step" id="guia-step-2">
+        <div class="guia-step-num">3</div>
+        <h3>Ajusta los costes</h3>
+        <p class="guia-step-desc">Muchos transportistas solo calculan el combustible y olvidan el resto. Transportarte lo calcula todo.</p>
+        <div class="guia-card">
+          <div class="guia-card-row"><div class="guia-icon orange">🍽️</div><div class="guia-card-text"><strong>Dietas</strong><span>Valores sugeridos por Hacienda ya precargados</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon blue">⏱️</div><div class="guia-card-text"><strong>Tiempo de espera y descarga</strong><span>El tiempo que esperas en almacén también tiene un coste</span></div></div>
+          <div class="guia-card-row"><div class="guia-icon green">↩️</div><div class="guia-card-text"><strong>Retorno</strong><span>¿Vuelves vacío o con carga? La app calcula el coste real</span></div></div>
+        </div>
+        <div class="guia-tip"><strong>Consejo:</strong> Activa las pausas de descanso si el trayecto supera los 200 km.</div>
+      </div>
+      <div class="guia-step" id="guia-step-3">
+        <div class="guia-step-num">4</div>
+        <h3>Lee el resultado</h3>
+        <p class="guia-step-desc">La app te muestra el coste real desglosado. Así sabes qué precio cobrar para no trabajar a pérdida.</p>
+        <div class="guia-resultado">
+          <div class="guia-resultado-row"><span>Combustible</span><span>38,40 €</span></div>
+          <div class="guia-resultado-row"><span>Peajes</span><span>12,80 €</span></div>
+          <div class="guia-resultado-row"><span>Dietas</span><span>22,00 €</span></div>
+          <div class="guia-resultado-row"><span>Tiempo de espera</span><span>15,00 €</span></div>
+          <div class="guia-resultado-row"><span>Retorno vacío</span><span>21,50 €</span></div>
+          <div class="guia-resultado-row total"><span>Total estimado</span><span>109,70 €</span></div>
+        </div>
+        <div class="guia-tip"><strong>¿Y el precio al cliente?</strong> Añade tu margen en Perfil y la app calculará el precio mínimo a cobrar.</div>
+      </div>
+    </div>
+    <div class="guia-nav">
+      <button class="guia-nav-prev" id="guia-btn-prev" onclick="guiaPrev()" style="display:none">&#x2190; Anterior</button>
+      <button class="guia-nav-next" id="guia-btn-next" onclick="guiaNext()">Siguiente &#x2192;</button>
+    </div>
+  </div>
+</div>
+<!-- FIN: Modal tutorial -->
+
+<!-- INICIO: JS tutorial primeros pasos -->
+<script>
+(function() {
+  var guiaStep = 0;
+  var guiaTotalSteps = 4;
+  window.abrirGuia = function() {
+    guiaStep = 0; renderGuia();
+    document.getElementById('guia-overlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  };
+  window.cerrarGuia = function() {
+    document.getElementById('guia-overlay').classList.remove('visible');
+    document.body.style.overflow = '';
+  };
+  window.cerrarGuiaOverlay = function(e) {
+    if (e.target === document.getElementById('guia-overlay')) cerrarGuia();
+  };
+  window.guiaNext = function() {
+    if (guiaStep < guiaTotalSteps - 1) { guiaStep++; renderGuia(); }
+    else cerrarGuia();
+  };
+  window.guiaPrev = function() {
+    if (guiaStep > 0) { guiaStep--; renderGuia(); }
+  };
+  function renderGuia() {
+    for (var i = 0; i < guiaTotalSteps; i++) {
+      var s = document.getElementById('guia-step-' + i);
+      var d = document.getElementById('dot-' + i);
+      if (s) s.classList.toggle('active', i === guiaStep);
+      if (d) d.classList.toggle('active', i <= guiaStep);
+    }
+    var prev = document.getElementById('guia-btn-prev');
+    var next = document.getElementById('guia-btn-next');
+    if (prev) prev.style.display = guiaStep === 0 ? 'none' : 'block';
+    if (next) {
+      next.textContent = guiaStep === guiaTotalSteps - 1 ? '¡Empezar a calcular! 🚀' : 'Siguiente →';
+      next.classList.toggle('finish', guiaStep === guiaTotalSteps - 1);
+    }
+  }
+  document.addEventListener('keydown', function(e) {
+    var o = document.getElementById('guia-overlay');
+    if (o && o.classList.contains('visible')) {
+      if (e.key === 'Escape') cerrarGuia();
+      if (e.key === 'ArrowRight') guiaNext();
+      if (e.key === 'ArrowLeft') guiaPrev();
+    }
+  });
+})();
+</script>
+<!-- FIN: JS tutorial -->
 </body>
 </html>
