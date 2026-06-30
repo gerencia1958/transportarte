@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facturación · Transportarte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --ink:#1A1A2E;
+    --ink-soft:#4A4A5E;
+    --orange:#E25C1D;
+    --blue:#1A3A5C;
+    --line:#D8D2C2;
+    --green:#2F6B4F;
+    --red:#B23A2E;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .shell{
+    display:grid;
+    grid-template-columns:230px 1fr;
+    min-height:100vh;
+  }
+  .sidebar{
+    background:var(--blue);
+    color:#fff;
+    padding:28px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .brand{
+    font-family:'Spectral',serif;
+    font-size:21px;
+    font-weight:700;
+    margin-bottom:2px;
+    letter-spacing:.2px;
+  }
+  .brand-sub{
+    font-size:11px;
+    color:#B9C7D6;
+    margin-bottom:28px;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+  }
+  .navbtn{
+    text-align:left;
+    background:transparent;
+    border:none;
+    color:#D9E1EA;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    font-weight:500;
+    padding:11px 12px;
+    border-radius:7px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .navbtn:hover{background:rgba(255,255,255,.07);}
+  .navbtn.active{background:var(--orange);color:#fff;}
+  .road{
+    flex:1;
+    display:flex;
+    align-items:flex-end;
+    padding-bottom:10px;
+  }
+  .road-line{
+    width:100%;
+    border-top:3px dashed rgba(255,255,255,.25);
+    position:relative;
+  }
+  .road-label{
+    font-size:10px;
+    color:rgba(255,255,255,.45);
+    margin-top:8px;
+    letter-spacing:.5px;
+  }
+  main{
+    padding:36px 44px;
+    max-width:980px;
+  }
+  h1.page-title{
+    font-family:'Spectral',serif;
+    font-size:26px;
+    font-weight:600;
+    margin:0 0 4px 0;
+  }
+  .page-sub{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin-bottom:24px;
+  }
+  .divider{
+    border:none;
+    border-top:2px dashed var(--line);
+    margin:22px 0;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:24px 26px;
+    margin-bottom:20px;
+  }
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;}
+  label{
+    font-size:12px;
+    font-weight:600;
+    color:var(--blue);
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    display:block;
+    margin-bottom:5px;
+  }
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#FCFBF8;
+    color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:2px solid var(--orange);
+    outline-offset:1px;
+    background:#fff;
+  }
+  .field{margin-bottom:0;}
+  .section-label{
+    font-family:'Spectral',serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--blue);
+    margin:0 0 14px 0;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .badge-num{
+    background:var(--orange);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:5px;
+  }
+  table.lines{width:100%;border-collapse:collapse;margin-top:6px;}
+  table.lines th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--ink-soft);
+    padding:6px 8px;
+    border-bottom:2px solid var(--line);
+  }
+  table.lines td{
+    padding:5px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  table.lines td.num{width:130px;}
+  table.lines td.del{width:34px;text-align:center;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    padding:10px 18px;
+    border-radius:7px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--orange);color:#fff;}
+  .btn-primary:hover{background:#C94E16;}
+  .btn-ghost{background:transparent;color:var(--blue);border:1px solid var(--line);}
+  .btn-ghost:hover{background:#F0EEE6;}
+  .btn-small{padding:5px 10px;font-size:12px;}
+  .btn-del{background:transparent;color:var(--red);border:none;cursor:pointer;font-size:16px;}
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-top:4px;}
+  .totals{
+    margin-top:18px;
+    border-top:2px dashed var(--line);
+    padding-top:16px;
+  }
+  .totals-row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+  }
+  .totals-row.final{
+    font-size:19px;
+    font-weight:700;
+    color:var(--orange);
+    border-top:1px solid var(--line);
+    margin-top:6px;
+    padding-top:12px;
+  }
+  .totals-row span:first-child{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+  .actions{display:flex;gap:10px;margin-top:20px;}
+  .empty{
+    text-align:center;
+    color:var(--ink-soft);
+    padding:40px 20px;
+    font-size:14px;
+  }
+  .client-list{display:flex;flex-direction:column;gap:8px;}
+  .client-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    background:#FCFBF8;
+  }
+  .client-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    background:var(--blue);
+    color:#fff;
+    padding:2px 8px;
+    border-radius:5px;
+    margin-right:10px;
+  }
+  .client-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  table.hist{width:100%;border-collapse:collapse;}
+  table.hist th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:8px;
+    border-bottom:2px solid var(--line);
+  }
+  table.hist td{padding:8px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .tag-ret{
+    font-size:10.5px;
+    background:#EFE6D8;
+    color:var(--blue);
+    padding:2px 7px;
+    border-radius:4px;
+    font-weight:600;
+  }
+  .hidden{display:none !important;}
+  .helper{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+
+  /* ---- Plantilla de impresión / PDF ---- */
+  #invoiceSheet{
+    width:760px;
+    background:#fff;
+    color:#000;
+    font-family:'Inter',sans-serif;
+    padding:0;
+  }
+  .inv-header{display:flex;justify-content:space-between;align-items:flex-start;padding:18px;border:2px solid #1A3A5C;}
+  .inv-co-name{font-family:'Spectral',serif;font-weight:700;font-size:17px;color:#1A3A5C;}
+  .inv-co-meta{font-size:11px;line-height:1.5;margin-top:4px;}
+  .inv-co-tag{font-family:'Spectral',serif;color:var(--orange);font-weight:700;font-size:13px;text-align:right;}
+  .inv-table{width:100%;border-collapse:collapse;border:2px solid #1A3A5C;border-top:none;}
+  .inv-table td,.inv-table th{border:1px solid #1A3A5C;padding:5px 8px;font-size:12px;}
+  .inv-label{background:#EFE6D8;font-weight:700;width:160px;}
+  .inv-fact-num{background:var(--orange);color:#fff;font-weight:700;text-align:center;}
+  .inv-concept-th{background:#1A3A5C;color:#fff;font-weight:700;}
+  .inv-amount{text-align:right;font-family:'JetBrains Mono',monospace;}
+  .inv-totals td{font-family:'JetBrains Mono',monospace;}
+  .inv-final{background:#1A3A5C;color:#fff;font-weight:700;font-size:14px;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="sidebar">
+    <div class="brand">Transportarte</div>
+    <div class="brand-sub">Facturación</div>
+    <button class="navbtn active" data-view="nueva" onclick="showView('nueva')">🧾 Nueva factura</button>
+    <button class="navbtn" data-view="clientes" onclick="showView('clientes')">📇 Clientes</button>
+    <button class="navbtn" data-view="historial" onclick="showView('historial')">📚 Historial</button>
+    <div class="road">
+      <div>
+        <div class="road-line"></div>
+        <div class="road-label">PORQUE TRANSPORTAR TAMBIÉN ES UN ARTE</div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ===================== VISTA: NUEVA FACTURA ===================== -->
+    <section id="view-nueva">
+      <h1 class="page-title">Nueva factura</h1>
+      <div class="page-sub">Selecciona el cliente, completa los conceptos y descarga el PDF.</div>
+
+      <div class="card">
+        <div class="section-label">Ajuste de numeración (solo si hace falta corregirla)</div>
+        <div class="grid3">
+          <div class="field">
+            <label>Última factura histórica emitida</label>
+            <input type="text" id="adjustLastNum">
+          </div>
+          <div class="field" style="display:flex; align-items:flex-end;">
+            <button class="btn btn-ghost btn-small" onclick="adjustLastNum()">Guardar como última emitida</button>
+          </div>
+        </div>
+        <div class="helper">La próxima factura nueva tomará automáticamente el número siguiente a este.</div>
+      </div>
+
+      <div class="card" id="folderCard">
+        <div class="section-label">Carpeta de destino (guardado automático)</div>
+        <div class="helper" id="folderSupportMsg" style="margin-bottom:10px;"></div>
+        <div class="actions" style="margin-top:0;">
+          <button class="btn btn-primary btn-small" id="btnConnectFolder" onclick="conectarCarpeta()">Conectar carpeta "App Facturas Transportarte"</button>
+          <button class="btn btn-ghost btn-small hidden" id="btnDisconnectFolder" onclick="desconectarCarpeta()">Desconectar</button>
+        </div>
+        <div id="folderStatus" class="helper" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Datos de la factura <span class="badge-num" id="nextNumBadge">Nº —</span></div>
+        <div class="grid3">
+          <div class="field">
+            <label>Número de factura</label>
+            <input type="text" id="f_numero" oninput="updatePreview()">
+          </div>
+          <div class="field">
+            <label>Fecha</label>
+            <input type="date" id="f_fecha" oninput="updatePreview()">
+          </div>
+          <div class="field">
+            <label>Forma de pago</label>
+            <select id="f_pago" onchange="updatePreview()">
+              <option>Contado</option>
+              <option>Transferencia</option>
+              <option>30 días</option>
+              <option>60 días</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Cliente</div>
+        <div class="grid2">
+          <div class="field">
+            <label>Seleccionar cliente</label>
+            <select id="f_cliente" onchange="onClientSelect()">
+              <option value="">— Elegir de la base de datos —</option>
+            </select>
+            <div class="helper">¿No está en la lista? Dalo de alta en la pestaña "Clientes".</div>
+          </div>
+          <div class="field">
+            <label>Dirección de entrega (si difiere)</label>
+            <input type="text" id="f_entrega" placeholder="La misma" oninput="updatePreview()">
+          </div>
+        </div>
+        <div id="clientPreview" class="helper" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Conceptos</div>
+        <table class="lines" id="lineTable">
+          <thead><tr><th>Descripción</th><th class="num">Importe €</th><th class="del"></th></tr></thead>
+          <tbody id="lineBody"></tbody>
+        </table>
+        <button class="btn btn-ghost btn-small" style="margin-top:10px;" onclick="addLine()">+ Añadir línea</button>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Retención fiscal</div>
+        <div class="toggle-row">
+          <input type="checkbox" id="f_retencion" onchange="recalc(); updatePreview();" style="width:18px;height:18px;">
+          <label style="margin:0;text-transform:none;font-size:14px;color:var(--ink);">¿Este cliente debe retenerme el 1% de IRPF en esta factura?</label>
+        </div>
+
+        <div class="totals">
+          <div class="totals-row"><span>Base imponible</span><span id="t_base">0,00 €</span></div>
+          <div class="totals-row"><span>IVA (21%)</span><span id="t_iva">0,00 €</span></div>
+          <div class="totals-row"><span>Total factura</span><span id="t_total">0,00 €</span></div>
+          <div class="totals-row" id="t_retRow"><span>Retención (1%)</span><span id="t_ret">0,00 €</span></div>
+          <div class="totals-row final"><span>Total a pagar</span><span id="t_pagar">0,00 €</span></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="guardarYDescargar()">Guardar y descargar PDF</button>
+          <button class="btn btn-ghost" onclick="resetForm()">Limpiar formulario</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-label">Vista previa</div>
+        <div class="helper" style="margin-bottom:12px;">Así quedará el PDF, actualizado en tiempo real mientras escribes.</div>
+        <div style="overflow-x:auto; border:1px solid var(--line); border-radius:8px; padding:14px; background:#FCFBF8;">
+          <div id="previewSheet"></div>
+        </div>
+      </div>
+
+    </section>
+    <section id="view-clientes" class="hidden">
+      <h1 class="page-title">Clientes</h1>
+      <div class="page-sub">Base de datos local de clientes, cada uno con su número asignado.</div>
+
+      <div class="card">
+        <div class="section-label">Importar clientes desde Excel</div>
+        <div class="helper" style="margin-bottom:10px;">Sube el archivo <strong>clientes_import.json</strong> (generado a partir de tu Clientes.xlsx) para cargar toda tu base de golpe. Solo hace falta hacerlo una vez.</div>
+        <label class="btn btn-primary btn-small" style="display:inline-flex; align-items:center; cursor:pointer;">
+          Elegir archivo clientes_import.json
+          <input type="file" id="importFile" accept="application/json" onchange="importClientsFile(this)" style="display:none;">
+        </label>
+        <div id="importMsg" class="helper"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Dar de alta cliente nuevo</div>
+        <div class="grid2">
+          <div class="field"><label>Nombre / Razón social</label><input type="text" id="c_nombre"></div>
+          <div class="field"><label>NIF / CIF</label><input type="text" id="c_nif"></div>
+          <div class="field"><label>Dirección fiscal</label><input type="text" id="c_dir"></div>
+          <div class="field"><label>Teléfono</label><input type="text" id="c_tel"></div>
+          <div class="field"><label>Persona de contacto</label><input type="text" id="c_contacto"></div>
+          <div class="field"><label>Correo electrónico</label><input type="text" id="c_email"></div>
+        </div>
+        <div class="actions"><button class="btn btn-primary" onclick="addClient()">Guardar cliente</button></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Clientes registrados</div>
+        <div class="client-list" id="clientList"></div>
+        <div class="empty hidden" id="clientEmpty">Todavía no hay clientes. Da de alta el primero arriba.</div>
+      </div>
+    </section>
+
+    <!-- ===================== VISTA: HISTORIAL ===================== -->
+    <section id="view-historial" class="hidden">
+      <h1 class="page-title">Historial de facturas</h1>
+      <div class="page-sub">Registro acumulado de todas las facturas generadas.</div>
+
+      <div class="card">
+        <div class="section-label">Copia de seguridad</div>
+        <div class="helper" style="margin-bottom:10px;">Guarda un archivo único con todos tus datos (clientes, historial y numeración) para conservarlo en ~/Desktop/Proyectos/ junto al resto de tu sistema. Recomendado tras cada sesión de facturación.</div>
+        <div class="actions" style="margin-top:0;">
+          <button class="btn btn-primary btn-small" onclick="exportarBackup()">Exportar copia de seguridad</button>
+          <label class="btn btn-ghost btn-small" style="display:inline-flex; align-items:center; cursor:pointer; margin:0;">
+            Importar copia de seguridad
+            <input type="file" accept="application/json" onchange="importarBackup(this)" style="display:none;">
+          </label>
+        </div>
+        <div id="backupMsg" class="helper"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Importar historial desde Gestión.xlsx</div>
+        <div class="helper" style="margin-bottom:10px;">Sube el archivo <strong>historial_import.json</strong> (lo genero a partir de tu Gestion.xlsx cuando me lo pases) para cargar de golpe todas las facturas de años anteriores.</div>
+        <label class="btn btn-primary btn-small" style="display:inline-flex; align-items:center; cursor:pointer;">
+          Elegir archivo historial_import.json
+          <input type="file" id="importHistFile" accept="application/json" onchange="importHistoryFile(this)" style="display:none;">
+        </label>
+        <div id="importHistMsg" class="helper"></div>
+      </div>
+
+      <div class="card">
+        <table class="hist">
+          <thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Base</th><th>Total a pagar</th><th>Retención</th><th></th></tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+        <div class="empty hidden" id="histEmpty">Aún no se ha generado ninguna factura.</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== PLANTILLA OCULTA PARA PDF ===================== -->
+<div style="position:fixed; top:0; left:0; opacity:0.01; pointer-events:none; z-index:-1;">
+  <div id="invoiceSheet">
+    <div class="inv-header">
+      <div>
+        <div class="inv-co-name">Francisco José Santos Gómez</div>
+        <div class="inv-co-meta">
+          CIF: 50638059V<br>
+          Calle de Ávila 2, 28723, Montenebro, Madrid<br>
+          Tel: 663779308 · 642325331<br>
+          www.transportarte.es · gerencia@transportarte.es
+        </div>
+      </div>
+      <div class="inv-co-tag">Transporte y<br>Servicios Asociados</div>
+    </div>
+    <table class="inv-table">
+      <tr>
+        <td class="inv-label">FECHA</td><td id="pdf_fecha"></td>
+        <td class="inv-label">FACTURA Nº</td><td class="inv-fact-num" id="pdf_numero"></td>
+      </tr>
+      <tr><td class="inv-label">CLIENTE</td><td colspan="3" id="pdf_cliente"></td></tr>
+      <tr>
+        <td class="inv-label">NIF/CIF</td><td id="pdf_nif"></td>
+        <td class="inv-label">Correo electrónico</td><td id="pdf_email"></td>
+      </tr>
+      <tr><td class="inv-label">Dirección fiscal</td><td colspan="3" id="pdf_dir"></td></tr>
+      <tr><td class="inv-label">Dir. de entrega</td><td colspan="3" id="pdf_entrega"></td></tr>
+      <tr>
+        <td class="inv-label">Contacto</td><td id="pdf_contacto"></td>
+        <td class="inv-label">Forma de pago</td><td id="pdf_pago"></td>
+      </tr>
+    </table>
+    <table class="inv-table" style="border-bottom:none;">
+      <tr><th class="inv-concept-th">CONCEPTO</th><th class="inv-concept-th" style="width:110px;">EUROS</th></tr>
+      <tbody id="pdf_lines"></tbody>
+    </table>
+    <div style="border:2px solid #1A3A5C; border-top:none; height:22px;"></div>
+    <table class="inv-table inv-totals" style="border-top:none;">
+      <tr>
+        <td colspan="2" style="border:none;"></td>
+        <td class="inv-label">Base Imponible</td><td class="inv-amount" id="pdf_base"></td>
+      </tr>
+      <tr>
+        <td colspan="2" rowspan="3" style="vertical-align:top; color:#1A3A5C; border-right:2px solid #1A3A5C;">
+          <strong>Observaciones:</strong><br>
+          <span style="font-style:italic;">Porque transportar también es un arte.....</span><br><br>
+          Abonar el pago en alguna de las siguientes cuentas:<br>
+          Cta Nº: ES68 2100 2904 0802 0084 6782 — Imagin<br>
+          Cta Nº: ES45 0073 0100 5105 9561 8790 — Openbank
+        </td>
+        <td class="inv-label">TOTAL IVA 21%</td><td class="inv-amount" id="pdf_iva"></td>
+      </tr>
+      <tr><td class="inv-label">TOTAL FACTURA</td><td class="inv-amount" id="pdf_totalfactura"></td></tr>
+      <tr><td class="inv-label" id="pdf_ret_label">RETENCIÓN 1%</td><td class="inv-amount" id="pdf_ret"></td></tr>
+      <tr>
+        <td colspan="2" style="border:none;"></td>
+        <td class="inv-final">Total a pagar €</td><td class="inv-amount inv-final" id="pdf_pagar"></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script>
+const NUM_LINES = 20;
+const LS_CLIENTS = 'transportarte_clientes';
+const LS_INVOICES = 'transportarte_facturas';
+const LS_LASTNUM = 'transportarte_ultimo_numero';
+const DEFAULT_STARTING_NUM = 1755; // última factura histórica confirmada: Meninas Runaway, 21/06/2026
+const LS_LASTCLIENTNUM = 'transportarte_ultimo_cliente_num';
+
+function getClients(){ return JSON.parse(localStorage.getItem(LS_CLIENTS) || '[]'); }
+function setClients(c){ localStorage.setItem(LS_CLIENTS, JSON.stringify(c)); }
+function getInvoices(){ return JSON.parse(localStorage.getItem(LS_INVOICES) || '[]'); }
+function setInvoices(i){ localStorage.setItem(LS_INVOICES, JSON.stringify(i)); }
+function getLastNum(){
+  const stored = localStorage.getItem(LS_LASTNUM);
+  return stored ? parseInt(stored,10) : DEFAULT_STARTING_NUM;
+}
+function setLastNum(n){ localStorage.setItem(LS_LASTNUM, String(n)); }
+function getLastClientNum(){ return parseInt(localStorage.getItem(LS_LASTCLIENTNUM) || '0', 10); }
+function setLastClientNum(n){ localStorage.setItem(LS_LASTCLIENTNUM, String(n)); }
+
+function euros(n){
+  return (isNaN(n)?0:n).toLocaleString('es-ES',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+function parseImporte(v){
+  if(v===null || v===undefined || v==='') return 0;
+  let s = String(v).trim();
+  if(s.includes(',')){
+    s = s.replace(/\./g,'').replace(',', '.'); // formato europeo: punto de miles, coma decimal
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+/* ---------- Guardado en iPad/iOS (Web Share -> Guardar en Archivos / iCloud Drive) ---------- */
+const ES_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+async function compartirOGuardarArchivo(blob, filename, mimeType){
+  try{
+    const file = new File([blob], filename, {type: mimeType});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title: filename});
+      return 'compartido';
+    }
+  }catch(err){
+    if(err.name === 'AbortError') return 'cancelado'; // el usuario cerró el panel de compartir
+  }
+  // Fallback: descarga normal
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  return 'descargado';
+}
+
+/* ---------- Carpeta de destino (File System Access API) ---------- */
+let carpetaHandle = null;
+const SOPORTA_FS = 'showDirectoryPicker' in window;
+
+function abrirDBCarpeta(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open('transportarte_fs', 1);
+    req.onupgradeneeded = ()=> req.result.createObjectStore('handles');
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function guardarHandleEnDB(handle){
+  const db = await abrirDBCarpeta();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('handles','readwrite');
+    tx.objectStore('handles').put(handle, 'carpetaPrincipal');
+    tx.oncomplete = ()=>resolve();
+    tx.onerror = ()=>reject(tx.error);
+  });
+}
+async function leerHandleDeDB(){
+  const db = await abrirDBCarpeta();
+  return new Promise((resolve)=>{
+    const tx = db.transaction('handles','readonly');
+    const req = tx.objectStore('handles').get('carpetaPrincipal');
+    req.onsuccess = ()=>resolve(req.result || null);
+    req.onerror = ()=>resolve(null);
+  });
+}
+async function borrarHandleDeDB(){
+  const db = await abrirDBCarpeta();
+  const tx = db.transaction('handles','readwrite');
+  tx.objectStore('handles').delete('carpetaPrincipal');
+}
+
+async function conectarCarpeta(){
+  if(!SOPORTA_FS){
+    alert('Tu navegador no soporta guardado automático en carpeta (esto pasa en Safari). Usa Chrome o Edge en tu Mac para esta función. Mientras tanto, los PDF seguirán descargándose a tu carpeta de Descargas.');
+    return;
+  }
+  try{
+    const handle = await window.showDirectoryPicker({id:'app-facturas-transportarte'});
+    await handle.requestPermission({mode:'readwrite'});
+    carpetaHandle = handle;
+    await guardarHandleEnDB(handle);
+    actualizarEstadoCarpeta();
+  }catch(err){
+    // usuario canceló el diálogo
+  }
+}
+function desconectarCarpeta(){
+  carpetaHandle = null;
+  borrarHandleDeDB();
+  actualizarEstadoCarpeta();
+}
+async function actualizarEstadoCarpeta(){
+  const support = document.getElementById('folderSupportMsg');
+  const status = document.getElementById('folderStatus');
+  const btnConnect = document.getElementById('btnConnectFolder');
+  const btnDisconnect = document.getElementById('btnDisconnectFolder');
+
+  if(!SOPORTA_FS){
+    if(ES_IOS){
+      support.innerHTML = 'En iPad, iOS no permite conectar una carpeta directamente (es una restricción de Apple, no de esta app). En su lugar: al descargar el PDF o el backup, elige <strong>"Guardar en Archivos"</strong> → iCloud Drive → la carpeta "App Facturas Transportarte". Si esa carpeta está dentro de iCloud Drive, aparecerá sincronizada sola en tu Mac, lista para el script Python.';
+    } else {
+      support.textContent = 'Tu navegador no soporta esta función. Usa Chrome o Edge en tu Mac. Por ahora, los PDF se seguirán descargando normalmente a tu carpeta de Descargas.';
+    }
+    btnConnect.disabled = true;
+    btnConnect.classList.toggle('hidden', ES_IOS);
+    return;
+  }
+  support.textContent = 'Conecta una vez la carpeta "App Facturas Transportarte" de tu Escritorio. Desde entonces, cada factura (PDF + copia de seguridad) se guardará ahí automáticamente, lista para el script Python.';
+
+  if(carpetaHandle){
+    const permiso = await carpetaHandle.queryPermission({mode:'readwrite'});
+    if(permiso === 'granted'){
+      status.textContent = `✔ Conectada: "${carpetaHandle.name}". Las facturas se guardarán aquí automáticamente.`;
+      btnConnect.classList.add('hidden');
+      btnDisconnect.classList.remove('hidden');
+      return;
+    }
+  }
+  status.textContent = 'Carpeta no conectada todavía. Los PDF se descargarán a tu carpeta de Descargas hasta que la conectes.';
+  btnConnect.classList.remove('hidden');
+  btnDisconnect.classList.add('hidden');
+}
+
+async function getSubcarpeta(nombre){
+  return await carpetaHandle.getDirectoryHandle(nombre, {create:true});
+}
+
+async function guardarPdfEnCarpeta(blob, nombreArchivo){
+  try{
+    const pdfDir = await getSubcarpeta('PDFs');
+    const fileHandle = await pdfDir.getFileHandle(nombreArchivo, {create:true});
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
+    return true;
+  }catch(err){
+    console.error('No se pudo guardar el PDF en la carpeta conectada:', err);
+    return false;
+  }
+}
+
+async function guardarBackupEnCarpeta(){
+  try{
+    const backup = {
+      tipo: 'transportarte_backup',
+      fechaExportacion: new Date().toISOString(),
+      clientes: getClients(),
+      facturas: getInvoices(),
+      ultimoNumeroFactura: getLastNum(),
+      ultimoNumeroCliente: getLastClientNum()
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const jsonDir = await getSubcarpeta('backups_json');
+    const fecha = new Date().toISOString().slice(0,10);
+    const fileHandle = await jsonDir.getFileHandle(`backup_${fecha}_auto.json`, {create:true});
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
+    return true;
+  }catch(err){
+    console.error('No se pudo guardar el backup automático:', err);
+    return false;
+  }
+}
+
+/* ---------- Navegación ---------- */
+function showView(v){
+  document.querySelectorAll('main > section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('view-'+v).classList.remove('hidden');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.navbtn[data-view="${v}"]`).classList.add('active');
+  if(v==='clientes') renderClientList();
+  if(v==='historial') renderHistory();
+}
+
+/* ---------- Líneas de concepto ---------- */
+function addLine(desc, amount){
+  const tbody = document.getElementById('lineBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="lineDesc" value="${desc||''}" oninput="updatePreview()"></td>
+    <td class="num"><input type="text" inputmode="decimal" class="lineAmount" value="${amount||''}" onchange="recalc(); updatePreview();" oninput="recalc(); updatePreview();"></td>
+    <td class="del"><button class="btn-del" onclick="this.closest('tr').remove(); recalc(); updatePreview();">×</button></td>`;
+  tbody.appendChild(tr);
+}
+function initLines(){
+  document.getElementById('lineBody').innerHTML = '';
+  for(let i=0;i<NUM_LINES;i++) addLine();
+}
+
+/* ---------- Cálculos ---------- */
+function recalc(){
+  const amounts = Array.from(document.querySelectorAll('.lineAmount')).map(i=>parseImporte(i.value));
+  const base = amounts.reduce((a,b)=>a+b,0);
+  const iva = base*0.21;
+  const totalFactura = base+iva;
+  const aplicaRet = document.getElementById('f_retencion').checked;
+  const ret = aplicaRet ? base*0.01 : 0;
+  const totalPagar = totalFactura - ret;
+
+  document.getElementById('t_base').textContent = euros(base);
+  document.getElementById('t_iva').textContent = euros(iva);
+  document.getElementById('t_total').textContent = euros(totalFactura);
+  document.getElementById('t_ret').textContent = euros(ret);
+  document.getElementById('t_pagar').textContent = euros(totalPagar);
+  document.getElementById('t_retRow').style.opacity = aplicaRet ? '1' : '0.4';
+
+  return {base, iva, totalFactura, ret, totalPagar, aplicaRet};
+}
+
+/* ---------- Clientes ---------- */
+function renderClientSelect(){
+  const sel = document.getElementById('f_cliente');
+  const clients = getClients();
+  sel.innerHTML = '<option value="">— Elegir de la base de datos —</option>' +
+    clients.map(c=>`<option value="${c.num}">${c.num} · ${c.nombre}</option>`).join('');
+}
+function onClientSelect(){
+  const num = document.getElementById('f_cliente').value;
+  const c = getClients().find(x=>String(x.num)===String(num));
+  const prev = document.getElementById('clientPreview');
+  if(!c){ prev.textContent=''; updatePreview(); return; }
+  prev.innerHTML = `<strong>${c.nombre}</strong> · ${c.nif} · ${c.dir} ${c.contacto? '· Contacto: '+c.contacto:''} ${c.email? '· '+c.email:''}`;
+  updatePreview();
+}
+/* ---------- Copia de seguridad completa ---------- */
+function exportarBackup(){
+  const backup = {
+    tipo: 'transportarte_backup',
+    fechaExportacion: new Date().toISOString(),
+    clientes: getClients(),
+    facturas: getInvoices(),
+    ultimoNumeroFactura: getLastNum(),
+    ultimoNumeroCliente: getLastClientNum()
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const fecha = new Date().toISOString().slice(0,10);
+  const filename = `Backup_Facturacion_Transportarte_${fecha}.json`;
+  compartirOGuardarArchivo(blob, filename, 'application/json').then(()=>{
+    document.getElementById('backupMsg').textContent = ES_IOS
+      ? `Copia exportada: ${backup.clientes.length} clientes, ${backup.facturas.length} facturas. Guárdala en Archivos → iCloud Drive → App Facturas Transportarte → backups_json.`
+      : `Copia exportada: ${backup.clientes.length} clientes, ${backup.facturas.length} facturas. Guárdala en ~/Desktop/App Facturas Transportarte/backups_json/.`;
+  });
+}
+
+function importarBackup(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(!confirm('Esto sustituirá todos los clientes, facturas y la numeración actuales por los del archivo de copia de seguridad. ¿Continuar?')) { input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const backup = JSON.parse(e.target.result);
+      if(backup.tipo !== 'transportarte_backup') throw new Error('formato');
+      setClients(backup.clientes || []);
+      setInvoices(backup.facturas || []);
+      setLastNum(backup.ultimoNumeroFactura || DEFAULT_STARTING_NUM);
+      setLastClientNum(backup.ultimoNumeroCliente || 0);
+      renderClientList();
+      renderClientSelect();
+      renderHistory();
+      prepararNuevaFactura();
+      document.getElementById('backupMsg').textContent = `Copia restaurada: ${(backup.clientes||[]).length} clientes, ${(backup.facturas||[]).length} facturas. Próxima factura: ${ (backup.ultimoNumeroFactura||DEFAULT_STARTING_NUM)+1 }.`;
+    }catch(err){
+      document.getElementById('backupMsg').textContent = 'No se pudo leer el archivo. Asegúrate de que sea una copia de seguridad exportada por esta misma herramienta.';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function importClientsFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(!Array.isArray(imported)) throw new Error('formato');
+      const existing = getClients();
+      const existingNifs = new Set(existing.map(c=>c.nif));
+      let added = 0, skipped = 0, maxNum = getLastClientNum();
+      imported.forEach(c=>{
+        if(existingNifs.has(c.nif) && c.nif){ skipped++; return; }
+        const num = ++maxNum;
+        existing.push({num, nombre:c.nombre||'', nif:c.nif||'', dir:c.dir||'', tel:c.tel||'', contacto:c.contacto||'', email:c.email||''});
+        existingNifs.add(c.nif);
+        added++;
+      });
+      setClients(existing);
+      setLastClientNum(maxNum);
+      renderClientList();
+      renderClientSelect();
+      document.getElementById('importMsg').textContent = `Importados ${added} clientes nuevos. ${skipped? skipped+' ya existían (mismo NIF) y se omitieron.':''}`;
+    }catch(err){
+      document.getElementById('importMsg').textContent = 'No se pudo leer el archivo. Asegúrate de que sea el JSON de importación.';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function addClient(){
+  const nombre = document.getElementById('c_nombre').value.trim();
+  const nif = document.getElementById('c_nif').value.trim();
+  if(!nombre || !nif){ alert('Indica al menos nombre y NIF/CIF.'); return; }
+  const num = getLastClientNum() + 1;
+  const clients = getClients();
+  clients.push({
+    num,
+    nombre,
+    nif,
+    dir: document.getElementById('c_dir').value.trim(),
+    tel: document.getElementById('c_tel').value.trim(),
+    contacto: document.getElementById('c_contacto').value.trim(),
+    email: document.getElementById('c_email').value.trim()
+  });
+  setClients(clients);
+  setLastClientNum(num);
+  ['c_nombre','c_nif','c_dir','c_tel','c_contacto','c_email'].forEach(id=>document.getElementById(id).value='');
+  renderClientList();
+  renderClientSelect();
+  alert(`Cliente nº ${num} guardado.`);
+}
+function deleteClient(num){
+  if(!confirm('¿Eliminar este cliente de la base de datos?')) return;
+  setClients(getClients().filter(c=>c.num!==num));
+  renderClientList();
+  renderClientSelect();
+}
+function renderClientList(){
+  const list = document.getElementById('clientList');
+  const clients = getClients();
+  document.getElementById('clientEmpty').classList.toggle('hidden', clients.length>0);
+  list.innerHTML = clients.map(c=>`
+    <div class="client-row">
+      <div>
+        <span class="client-num">Nº ${c.num}</span><strong>${c.nombre}</strong>
+        <div class="client-meta">${c.nif} ${c.dir? '· '+c.dir:''} ${c.contacto? '· '+c.contacto:''} ${c.email? '· '+c.email:''}</div>
+      </div>
+      <button class="btn-del" onclick="deleteClient(${c.num})">×</button>
+    </div>`).join('');
+}
+
+/* ---------- Historial ---------- */
+function adjustLastNum(){
+  const v = parseInt(document.getElementById('adjustLastNum').value, 10);
+  if(isNaN(v)){ alert('Indica un número válido.'); return; }
+  setLastNum(v);
+  document.getElementById('adjustLastNum').value = '';
+  prepararNuevaFactura();
+  alert(`Última factura emitida registrada como nº ${v}. La próxima nueva será la ${v+1}.`);
+}
+
+function importHistoryFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(!Array.isArray(imported)) throw new Error('formato');
+      const existing = getInvoices();
+      const existingNums = new Set(existing.map(f=>String(f.numero)));
+      let added = 0, skipped = 0, maxNum = getLastNum();
+      imported.forEach(f=>{
+        if(existingNums.has(String(f.numero))){ skipped++; return; }
+        existing.push(f);
+        existingNums.add(String(f.numero));
+        const n = parseInt(f.numero,10);
+        if(!isNaN(n) && n>maxNum) maxNum = n;
+        added++;
+      });
+      setInvoices(existing);
+      setLastNum(maxNum);
+      renderHistory();
+      document.getElementById('importHistMsg').textContent = `Importadas ${added} facturas históricas. ${skipped? skipped+' ya estaban y se omitieron.':''} Próxima factura nueva: ${maxNum+1}.`;
+    }catch(err){
+      document.getElementById('importHistMsg').textContent = 'No se pudo leer el archivo. Asegúrate de que sea el JSON de importación del historial.';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function renderHistory(){
+  const inv = getInvoices().slice().reverse();
+  document.getElementById('histEmpty').classList.toggle('hidden', inv.length>0);
+  document.getElementById('histBody').innerHTML = inv.map(f=>`
+    <tr>
+      <td>${f.numero}</td>
+      <td>${f.fechaTexto}</td>
+      <td>${f.clienteNombre}</td>
+      <td>${euros(f.base)}</td>
+      <td>${euros(f.totalPagar)}</td>
+      <td>${f.aplicaRet?'<span class="tag-ret">Con retención</span>':'—'}</td>
+      <td></td>
+    </tr>`).join('');
+}
+
+/* ---------- Formulario: número / fecha por defecto ---------- */
+function prepararNuevaFactura(){
+  const next = getLastNum() + 1;
+  document.getElementById('f_numero').value = next;
+  document.getElementById('nextNumBadge').textContent = 'Nº ' + next;
+  document.getElementById('f_fecha').value = new Date().toISOString().slice(0,10);
+  initLines();
+  document.getElementById('f_retencion').checked = false;
+  document.getElementById('f_entrega').value = '';
+  document.getElementById('f_cliente').value = '';
+  document.getElementById('clientPreview').textContent = '';
+  recalc();
+  updatePreview();
+}
+function resetForm(){ prepararNuevaFactura(); }
+
+function fechaLarga(iso){
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const [y,m,d] = iso.split('-').map(Number);
+  return `${d} de ${meses[m-1]} de ${y}`;
+}
+
+function recopilarDatosFactura(){
+  const numero = document.getElementById('f_numero').value.trim();
+  const fechaIso = document.getElementById('f_fecha').value;
+  const clienteNum = document.getElementById('f_cliente').value;
+  const cliente = getClients().find(c=>String(c.num)===String(clienteNum));
+  const calc = recalc();
+  const lines = Array.from(document.querySelectorAll('#lineBody tr')).map(tr=>({
+    desc: tr.querySelector('.lineDesc').value,
+    amount: parseImporte(tr.querySelector('.lineAmount').value)
+  }));
+  return {numero, fechaIso, cliente, calc, lines};
+}
+
+function rellenarPlantilla(prefix, datos){
+  const {numero, fechaIso, cliente, calc, lines} = datos;
+  const g = id => document.getElementById(prefix+id);
+  g('fecha').textContent = fechaIso ? fechaLarga(fechaIso) : '';
+  g('numero').textContent = numero || '—';
+  g('cliente').textContent = cliente ? cliente.nombre : '';
+  g('nif').textContent = cliente ? cliente.nif : '';
+  g('email').textContent = cliente ? (cliente.email||'') : '';
+  g('dir').textContent = cliente ? (cliente.dir||'') : '';
+  g('entrega').textContent = document.getElementById('f_entrega').value || 'La misma';
+  g('contacto').textContent = cliente ? (cliente.contacto||'') : '';
+  g('pago').textContent = document.getElementById('f_pago').value;
+  g('lines').innerHTML = lines.filter(l=>l.desc||l.amount).map(l=>
+    `<tr><td>${l.desc||''}</td><td class="inv-amount">${l.amount? l.amount.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}) : '0,00'}</td></tr>`
+  ).join('') || '<tr><td colspan="2" style="color:#999;font-style:italic;">Añade conceptos para verlos aquí…</td></tr>';
+  g('base').textContent = euros(calc.base);
+  g('iva').textContent = euros(calc.iva);
+  g('totalfactura').textContent = euros(calc.totalFactura);
+  g('ret_label').textContent = calc.aplicaRet ? 'RETENCIÓN 1%' : 'RETENCIÓN (N/A)';
+  g('ret').textContent = euros(calc.ret);
+  g('pagar').textContent = euros(calc.totalPagar);
+}
+
+function updatePreview(){
+  const previewSheet = document.getElementById('previewSheet');
+  if(previewSheet.children.length===0){
+    previewSheet.innerHTML = document.getElementById('invoiceSheet').innerHTML;
+    previewSheet.querySelectorAll('[id^="pdf_"]').forEach(el=>{
+      el.id = 'prev_' + el.id.slice(4);
+    });
+  }
+  rellenarPlantilla('prev_', recopilarDatosFactura());
+}
+
+/* ---------- Guardar + generar PDF ---------- */
+async function guardarYDescargar(){
+  const {numero, fechaIso, cliente, calc, lines} = recopilarDatosFactura();
+
+  if(!numero){ alert('Falta el número de factura.'); return; }
+  if(!cliente){ alert('Selecciona un cliente de la base de datos.'); return; }
+  if(!fechaIso){ alert('Falta la fecha.'); return; }
+  if(calc.base<=0){ alert('Añade al menos un concepto con importe.'); return; }
+
+  rellenarPlantilla('pdf_', {numero, fechaIso, cliente, calc, lines});
+
+  const sheet = document.getElementById('invoiceSheet');
+  const opts = {
+    margin: 10,
+    filename: `Factura_${numero}.pdf`,
+    html2canvas:{scale:2},
+    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
+  };
+
+  const finalizarGuardado = async (guardadoEnCarpeta) => {
+    const invoices = getInvoices();
+    invoices.push({
+      numero, fechaIso, fechaTexto: fechaLarga(fechaIso),
+      clienteNum: cliente.num, clienteNombre: cliente.nombre,
+      base: calc.base, iva: calc.iva, totalFactura: calc.totalFactura,
+      ret: calc.ret, totalPagar: calc.totalPagar, aplicaRet: calc.aplicaRet,
+      lines
+    });
+    setInvoices(invoices);
+    const n = parseInt(numero,10);
+    if(!isNaN(n) && n>getLastNum()) setLastNum(n);
+
+    if(carpetaHandle){
+      await guardarBackupEnCarpeta();
+    }
+
+    alert(guardadoEnCarpeta
+      ? `Factura nº ${numero} guardada. PDF y copia de seguridad guardados automáticamente en tu carpeta "App Facturas Transportarte".`
+      : (ES_IOS
+          ? `Factura nº ${numero} guardada. En el panel que se ha abierto (o se abrirá), elige "Guardar en Archivos" → iCloud Drive → App Facturas Transportarte, para que quede sincronizada con tu Mac.`
+          : `Factura nº ${numero} guardada y PDF descargado a tu carpeta de Descargas.`));
+    ofrecerEnvioCorreo(numero, cliente, calc);
+    prepararNuevaFactura();
+  };
+
+  if(carpetaHandle){
+    const blob = await html2pdf().set(opts).from(sheet).outputPdf('blob');
+    const ok = await guardarPdfEnCarpeta(blob, `Factura_${numero}.pdf`);
+    if(!ok){
+      // si falla el guardado directo, recurrimos a compartir/descargar
+      const blob2 = await html2pdf().set(opts).from(sheet).outputPdf('blob');
+      await compartirOGuardarArchivo(blob2, `Factura_${numero}.pdf`, 'application/pdf');
+    }
+    await finalizarGuardado(ok);
+  }else{
+    const blob = await html2pdf().set(opts).from(sheet).outputPdf('blob');
+    const resultado = await compartirOGuardarArchivo(blob, `Factura_${numero}.pdf`, 'application/pdf');
+    if(resultado === 'cancelado') return; // el usuario canceló el panel de compartir, no se guarda nada
+    await finalizarGuardado(false);
+  }
+}
+
+function ofrecerEnvioCorreo(numero, cliente, calc){
+  const quiereEnviar = confirm(`¿Quieres enviar la factura nº ${numero} por correo electrónico a ${cliente.nombre}?`);
+  if(!quiereEnviar) return;
+
+  let destinatario = cliente.email || '';
+  if(!destinatario){
+    destinatario = prompt('Este cliente no tiene email guardado. Indica el correo de destino:', '') || '';
+    if(!destinatario) return;
+  }
+
+  const asunto = `Factura nº ${numero} - Transportarte`;
+  const cuerpo =
+`Buenos días,
+
+Le adjunto la factura nº ${numero} por importe de ${euros(calc.totalPagar)}.
+
+Quedo a su disposición para cualquier consulta.
+
+Un cordial saludo,
+Francisco José Santos Gómez
+Transportarte`;
+
+  const mailto = `mailto:${encodeURIComponent(destinatario)}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  window.location.href = mailto;
+  alert(`Se ha abierto tu programa de correo con el destinatario y el asunto listos. El PDF ya está en tu carpeta de Descargas: arrástralo al mensaje para adjuntarlo.`);
+}
+
+/* ---------- Init ---------- */
+renderClientSelect();
+prepararNuevaFactura();
+
+(async ()=>{
+  if(SOPORTA_FS){
+    const handleGuardado = await leerHandleDeDB();
+    if(handleGuardado){
+      const permiso = await handleGuardado.queryPermission({mode:'readwrite'});
+      if(permiso === 'granted'){
+        carpetaHandle = handleGuardado;
+      }
+    }
+  }
+  actualizarEstadoCarpeta();
+})();
+</script>
+</body>
+</html>
